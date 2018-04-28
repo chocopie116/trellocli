@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/adlio/trello"
 	"github.com/pkg/errors"
@@ -53,18 +54,24 @@ func list(c *cli.Context) error {
 
 	client := trello.NewClient(k, t)
 
-	bp := c.String("board")
-	b, err := client.GetBoard(bp, trello.Defaults())
+	b := c.String("board")
+	board, err := client.GetBoard(b, trello.Defaults())
 	if err != nil {
-		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Board by ID. Value: %#v", bp)))
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Board by ID. Value: %#v", b)))
 	}
 
-	lists, err := b.GetLists(trello.Defaults())
+	lists, err := board.GetLists(trello.Defaults())
 	if err != nil {
-		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get List on Board. Value: %#v", b)))
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get List on Board. Value: %#v", board)))
 	}
 
+	fmt.Println(time.Now().Format("2006/01/02"))
+	fmt.Println("```")
 	for _, list := range lists {
+		if list.Name == "TODO" {
+			continue
+		}
+
 		cards, err := list.GetCards(trello.Defaults())
 		if err != nil {
 			logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Cards on List. Value: %#v", list)))
@@ -74,8 +81,9 @@ func list(c *cli.Context) error {
 		for _, card := range cards {
 			fmt.Printf("- %s\n", card.Name)
 		}
-		fmt.Print("\n\n")
+		fmt.Print("\n")
 	}
+	fmt.Println("```")
 
 	return nil
 }
