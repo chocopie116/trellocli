@@ -70,7 +70,7 @@ func list(c *cli.Context) error {
 			logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Cards on List. Value: %#v", list)))
 		}
 
-		fmt.Printf("%s \n", list.Name)
+		fmt.Printf("# %s \n", list.Name)
 		for _, card := range cards {
 			fmt.Printf("- %s\n", card.Name)
 		}
