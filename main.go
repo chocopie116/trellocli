@@ -4,13 +4,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/urfave/cli"
 	"github.com/adlio/trello"
+	"github.com/k0kubun/pp"
+	"github.com/urfave/cli"
 )
 
 var logger = log.New(os.Stdout, "", log.Ldate+log.Ltime+log.Lshortfile)
 
-var Commands = []cli.Command{
+var commands = []cli.Command{
 	cli.Command{
 		Name: "list",
 		Flags: []cli.Flag{
@@ -31,17 +32,22 @@ var Commands = []cli.Command{
 	},
 }
 
-
-
 func main() {
 	app := cli.NewApp()
-	app.Commands = Commands
+	app.Commands = commands
 	app.Flags = []cli.Flag{
+
 		cli.StringFlag{
 			Name: "app_key",
 		},
 	}
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		panic(err)
+	}
+
+	logger.Print("done")
+	pp.Print("ok")
 }
 
 func list(c *cli.Context) error {
@@ -50,11 +56,17 @@ func list(c *cli.Context) error {
 
 	client := trello.NewClient(k, t)
 
-	b := c.String("board")
-	bc, _ := client.GetBoard(b, trello.Defaults())
+	bp := c.String("board")
+	b, err := client.GetBoard(bp, trello.Defaults())
+	if err != nil {
+		return err
+	}
 
-	logger.Print(bc)
+	lists, _ := b.GetLists(trello.Defaults())
+	cards, _ := lists[0].GetCards(trello.Defaults())
+
+	pp.Print(lists[0])
+	pp.Print(cards[1])
 
 	return nil
 }
-
