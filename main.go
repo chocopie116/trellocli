@@ -1,15 +1,12 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/adlio/trello"
-	"github.com/k0kubun/pp"
 	"github.com/urfave/cli"
 )
-
-var logger = log.New(os.Stdout, "", log.Ldate+log.Ltime+log.Lshortfile)
 
 var commands = []cli.Command{
 	cli.Command{
@@ -45,9 +42,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	logger.Print("done")
-	pp.Print("ok")
 }
 
 func list(c *cli.Context) error {
@@ -62,11 +56,23 @@ func list(c *cli.Context) error {
 		return err
 	}
 
-	lists, _ := b.GetLists(trello.Defaults())
-	cards, _ := lists[0].GetCards(trello.Defaults())
+	lists, err := b.GetLists(trello.Defaults())
+	if err != nil {
+		return err
+	}
 
-	pp.Print(lists[0])
-	pp.Print(cards[1])
+	for _, list := range lists {
+		cards, err := list.GetCards(trello.Defaults())
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("%s \n", list.Name)
+		for _, card := range cards {
+			fmt.Printf("- %s\n", card.Name)
+		}
+		fmt.Print("\n\n")
+	}
 
 	return nil
 }
