@@ -7,5 +7,9 @@ install: $(DEP)
 $(DEP):
 	go get -u github.com/golang/dep/...
 
-setup: 
-	cp config.toml.sample config.toml
+build:
+	go build -o trellocli
+
+clean:
+	rm -f trellocli
+
