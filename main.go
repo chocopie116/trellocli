@@ -23,7 +23,7 @@ var commands = []cli.Command{
 		Name: "add",
 		Flags: []cli.Flag{
 			cli.StringFlag{
-				Name:  "card_name",
+				Name:  "card_name, c",
 				Usage: "card name",
 			},
 		},
