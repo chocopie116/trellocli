@@ -13,3 +13,7 @@ build:
 clean:
 	rm -f trellocli
 
+setup:
+	cp -rf config.toml.sample config.toml
+
+

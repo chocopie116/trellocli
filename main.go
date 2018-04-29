@@ -9,7 +9,6 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/adlio/trello"
 	"github.com/k0kubun/pp"
-	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
@@ -61,39 +60,47 @@ var commands = []cli.Command{
 }
 
 type Config struct {
-	AppKey string `toml:"api_app_key"`
-	Token  string `toml:"token""`
+	ApiConfig ApiConfig `toml:"api"`
+}
+
+type ApiConfig struct {
+	AppKey string `toml:"app_key"`
+	Token  string `toml:"token"`
 }
 
 func main() {
-	home, err := homedir.Dir()
-	if err != nil {
-		logger.Fatalln(err)
-	}
-
-	var c Config
-	if err != nil {
-		logger.Fatalln("cannot read config")
-	}
-
-	_, err := toml.DecodeFile(path, &c)
 	app := cli.NewApp()
 	app.Commands = commands
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "config, c",
+			Value: "config.toml",
+			Usage: "target config toml path",
+		},
+	}
 	app.Run(os.Args)
+	pp.Println("done")
 }
 
-func initClient(k string, t string) *trello.Client {
-	if k == "" || t == "" {
+func initClient(path string) *trello.Client {
+	var c Config
+	_, err := toml.DecodeFile(path, &c)
+	if err != nil {
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("cannot read config. Value: %s", path)))
+	}
+
+	if c.ApiConfig.AppKey == "" || c.ApiConfig.Token == "" {
 		logger.Fatalln("app_key and token is requred parameter.")
 	}
 
-	client := trello.NewClient(k, t)
+	client := trello.NewClient(c.ApiConfig.AppKey, c.ApiConfig.Token)
 
 	return client
 }
 
 func list(c *cli.Context) error {
-	client := initClient(c.String("app_key"), c.String("token"))
+	configPath := c.GlobalString("config")
+	client := initClient(configPath)
 
 	b := c.String("board")
 	if b == "" {
@@ -112,7 +119,6 @@ func list(c *cli.Context) error {
 	fmt.Println(time.Now().Format("2006/01/02"))
 	fmt.Println("```")
 	for _, list := range lists {
-		pp.Print(list.ID)
 		if list.Name == "TODO" {
 			continue
 		}
@@ -134,7 +140,8 @@ func list(c *cli.Context) error {
 }
 
 func add(c *cli.Context) error {
-	client := initClient(c.String("app_key"), c.String("token"))
+	configPath := c.GlobalString("config")
+	client := initClient(configPath)
 	cn := c.String("card_name")
 	if cn == "" {
 		logger.Fatalln("card_name is required parameter")
