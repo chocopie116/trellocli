@@ -16,22 +16,12 @@ import (
 var logger = log.New(os.Stdout, "", log.Ldate+log.Ltime+log.Lshortfile)
 var commands = []cli.Command{
 	cli.Command{
-		Name: "list",
-		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "board",
-				Usage: "Target board",
-			},
-		},
+		Name:   "list",
 		Action: list,
 	},
 	cli.Command{
 		Name: "add",
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "board",
-				Usage: "Target board",
-			},
 			cli.StringFlag{
 				Name:  "card_name",
 				Usage: "card name",
@@ -54,12 +44,7 @@ func main() {
 	app.Run(os.Args)
 }
 
-func initClient(path string) *trello.Client {
-	c, err := util.ReadConfig(path)
-	if err != nil {
-		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("cannot read config. Value: %s", path)))
-	}
-
+func initClient(c util.Config) *trello.Client {
 	if c.ApiConfig.AppKey == "" || c.ApiConfig.Token == "" {
 		logger.Fatalln("app_key and token is requred parameter.")
 	}
@@ -70,16 +55,16 @@ func initClient(path string) *trello.Client {
 }
 
 func list(c *cli.Context) error {
-	configPath := c.GlobalString("config")
-	client := initClient(configPath)
-
-	b := c.String("board")
-	if b == "" {
-		logger.Fatalln("board is required parameter")
-	}
-	board, err := client.GetBoard(b, trello.Defaults())
+	path := c.GlobalString("config")
+	config, err := util.ReadConfig(path)
 	if err != nil {
-		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Board by ID. Value: %#v", b)))
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("cannot read config. Value: %s", path)))
+	}
+
+	client := initClient(config)
+	board, err := client.GetBoard(config.TargetConfig.BoardId, trello.Defaults())
+	if err != nil {
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Board by ID. Value: %#v", config.TargetConfig.BoardId)))
 	}
 
 	lists, err := board.GetLists(trello.Defaults())
@@ -111,8 +96,13 @@ func list(c *cli.Context) error {
 }
 
 func add(c *cli.Context) error {
-	configPath := c.GlobalString("config")
-	client := initClient(configPath)
+	path := c.GlobalString("config")
+	config, err := util.ReadConfig(path)
+	if err != nil {
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("cannot read config. Value: %s", path)))
+	}
+
+	client := initClient(config)
 	cn := c.String("card_name")
 	if cn == "" {
 		logger.Fatalln("card_name is required parameter")
@@ -120,10 +110,10 @@ func add(c *cli.Context) error {
 
 	card := trello.Card{
 		Name:   cn,
-		IDList: "59aabd6963041edd45105f05", //TODO ハードコーディングやめる
+		IDList: config.TargetConfig.AddListId,
 	}
 
-	err := client.CreateCard(&card, trello.Defaults())
+	err = client.CreateCard(&card, trello.Defaults())
 	if err != nil {
 		logger.Fatalln(errors.Wrap(err, "failed create Cards on List"))
 	}
