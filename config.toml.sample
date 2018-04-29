@@ -6,3 +6,4 @@ token="yyyyy"
 board_id="zzzzz"
 add_list_id="aaaaa"
 show_list_names=["DOING", "DONE"]
+add_list_name="TODO"

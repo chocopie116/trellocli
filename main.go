@@ -112,6 +112,27 @@ func add(c *cli.Context) error {
 	}
 
 	client := initClient(config)
+
+	b, err := client.GetBoard(config.TargetConfig.BoardId, trello.Defaults())
+	if err != nil {
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Board by ID. Value: %#v", config.TargetConfig.BoardId)))
+	}
+
+	lists, err := b.GetLists(trello.Defaults())
+	if err != nil {
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get List on Board. Value: %#v", b)))
+	}
+	var listId string
+	for _, list := range lists {
+		if config.TargetConfig.AddListName == list.Name {
+			listId = list.ID
+		}
+	}
+
+	if listId == "" {
+		logger.Fatalln(fmt.Sprintf("target list name doesnot exists in lists. Value: %#v", config.TargetConfig.AddListName))
+	}
+
 	cn := c.String("card_name")
 	if cn == "" {
 		logger.Fatalln("card_name is required parameter")
@@ -119,7 +140,7 @@ func add(c *cli.Context) error {
 
 	card := trello.Card{
 		Name:   cn,
-		IDList: config.TargetConfig.AddListId,
+		IDList: listId,
 	}
 
 	err = client.CreateCard(&card, trello.Defaults())

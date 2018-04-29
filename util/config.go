@@ -17,6 +17,7 @@ type TargetConfig struct {
 	BoardId       string   `toml:"board_id"`
 	AddListId     string   `toml:"add_list_id"`
 	ShowListNames []string `toml:"show_list_names"`
+	AddListName   string   `toml:"add_list_name"`
 }
 
 func ReadConfig(path string) (Config, error) {
