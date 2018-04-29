@@ -5,15 +5,8 @@ import (
 )
 
 type Config struct {
-	ApiConfig    ApiConfig    `toml:"api"`
-	TargetConfig TargetConfig `toml:"target"`
-}
-
-type ApiConfig struct {
-	AppKey string `toml:"app_key"`
-	Token  string `toml:"token"`
-}
-type TargetConfig struct {
+	AppKey        string   `toml:"app_key"`
+	Token         string   `toml:"token"`
 	BoardId       string   `toml:"board_id"`
 	ShowListNames []string `toml:"show_list_names"`
 	AddListName   string   `toml:"add_list_name"`

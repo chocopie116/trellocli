@@ -45,11 +45,11 @@ func main() {
 }
 
 func initClient(c util.Config) *trello.Client {
-	if c.ApiConfig.AppKey == "" || c.ApiConfig.Token == "" {
+	if c.AppKey == "" || c.Token == "" {
 		logger.Fatalln("app_key and token is requred parameter.")
 	}
 
-	client := trello.NewClient(c.ApiConfig.AppKey, c.ApiConfig.Token)
+	client := trello.NewClient(c.AppKey, c.Token)
 
 	return client
 }
@@ -71,9 +71,9 @@ func list(c *cli.Context) error {
 	}
 
 	client := initClient(config)
-	board, err := client.GetBoard(config.TargetConfig.BoardId, trello.Defaults())
+	board, err := client.GetBoard(config.BoardId, trello.Defaults())
 	if err != nil {
-		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Board by ID. Value: %#v", config.TargetConfig.BoardId)))
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Board by ID. Value: %#v", config.BoardId)))
 	}
 
 	lists, err := board.GetLists(trello.Defaults())
@@ -84,7 +84,7 @@ func list(c *cli.Context) error {
 	fmt.Println(time.Now().Format("2006/01/02"))
 	fmt.Println("```")
 	for _, list := range lists {
-		if !contains(config.TargetConfig.ShowListNames, list.Name) {
+		if !contains(config.ShowListNames, list.Name) {
 			continue
 		}
 
@@ -113,9 +113,9 @@ func add(c *cli.Context) error {
 
 	client := initClient(config)
 
-	b, err := client.GetBoard(config.TargetConfig.BoardId, trello.Defaults())
+	b, err := client.GetBoard(config.BoardId, trello.Defaults())
 	if err != nil {
-		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Board by ID. Value: %#v", config.TargetConfig.BoardId)))
+		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("failed Get Board by ID. Value: %#v", config.BoardId)))
 	}
 
 	lists, err := b.GetLists(trello.Defaults())
@@ -124,13 +124,13 @@ func add(c *cli.Context) error {
 	}
 	var listId string
 	for _, list := range lists {
-		if config.TargetConfig.AddListName == list.Name {
+		if config.AddListName == list.Name {
 			listId = list.ID
 		}
 	}
 
 	if listId == "" {
-		logger.Fatalln(fmt.Sprintf("target list name doesnot exists in lists. Value: %#v", config.TargetConfig.AddListName))
+		logger.Fatalln(fmt.Sprintf("target list name doesnot exists in lists. Value: %#v", config.AddListName))
 	}
 
 	cn := c.String("card_name")
