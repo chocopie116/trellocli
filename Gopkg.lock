@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/BurntSushi/toml"
+  packages = ["."]
+  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
+  version = "v0.3.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/adlio/trello"
   packages = ["."]
@@ -46,6 +52,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a2523ba948d453182debfa72ae1d186907bdcc145dc0949b109d08facad67ab1"
+  inputs-digest = "dd4b26f1b094f97f1e6a94f6c4691532e210ce9ef2b17ad8d3987eee67f26c06"
   solver-name = "gps-cdcl"
   solver-version = 1
