@@ -6,11 +6,15 @@ import (
 	"os"
 	"time"
 
+	"github.com/BurntSushi/toml"
 	"github.com/adlio/trello"
 	"github.com/k0kubun/pp"
+	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
+
+const TRELLO_CLI_RC_FILE = ".trelloclirc"
 
 var logger = log.New(os.Stdout, "", log.Ldate+log.Ltime+log.Lshortfile)
 var commands = []cli.Command{
@@ -56,7 +60,23 @@ var commands = []cli.Command{
 	},
 }
 
+type Config struct {
+	AppKey string `toml:"api_app_key"`
+	Token  string `toml:"token""`
+}
+
 func main() {
+	home, err := homedir.Dir()
+	if err != nil {
+		logger.Fatalln(err)
+	}
+
+	var c Config
+	if err != nil {
+		logger.Fatalln("cannot read config")
+	}
+
+	_, err := toml.DecodeFile(path, &c)
 	app := cli.NewApp()
 	app.Commands = commands
 	app.Run(os.Args)
