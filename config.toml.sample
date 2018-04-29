@@ -1,3 +1,7 @@
 [api]
 app_key="xxxxx"
 token="yyyyy"
+
+[target]
+board_id="zzzzz"
+add_list_id="aaaaa"

@@ -41,12 +41,17 @@ var commands = []cli.Command{
 }
 
 type Config struct {
-	ApiConfig ApiConfig `toml:"api"`
+	ApiConfig    ApiConfig    `toml:"api"`
+	TargetConfig TargetConfig `toml:"target"`
 }
 
 type ApiConfig struct {
 	AppKey string `toml:"app_key"`
 	Token  string `toml:"token"`
+}
+type TargetConfig struct {
+	BoardId   string `toml:"board_id"`
+	AddListId string `toml:"add_list_id"`
 }
 
 func main() {
