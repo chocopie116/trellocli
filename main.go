@@ -8,12 +8,9 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/adlio/trello"
-	"github.com/k0kubun/pp"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
-
-const TRELLO_CLI_RC_FILE = ".trelloclirc"
 
 var logger = log.New(os.Stdout, "", log.Ldate+log.Ltime+log.Lshortfile)
 var commands = []cli.Command{
@@ -24,14 +21,6 @@ var commands = []cli.Command{
 				Name:  "board",
 				Usage: "Target board",
 			},
-			cli.StringFlag{
-				Name:  "app_key",
-				Usage: "Trello API app key",
-			},
-			cli.StringFlag{
-				Name:  "token",
-				Usage: "Trello API token",
-			},
 		},
 		Action: list,
 	},
@@ -41,14 +30,6 @@ var commands = []cli.Command{
 			cli.StringFlag{
 				Name:  "board",
 				Usage: "Target board",
-			},
-			cli.StringFlag{
-				Name:  "app_key",
-				Usage: "Trello API app key",
-			},
-			cli.StringFlag{
-				Name:  "token",
-				Usage: "Trello API token",
 			},
 			cli.StringFlag{
 				Name:  "card_name",
@@ -79,7 +60,6 @@ func main() {
 		},
 	}
 	app.Run(os.Args)
-	pp.Println("done")
 }
 
 func initClient(path string) *trello.Client {
