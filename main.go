@@ -54,6 +54,15 @@ func initClient(c util.Config) *trello.Client {
 	return client
 }
 
+func contains(s []string, e string) bool {
+	for _, v := range s {
+		if e == v {
+			return true
+		}
+	}
+	return false
+}
+
 func list(c *cli.Context) error {
 	path := c.GlobalString("config")
 	config, err := util.ReadConfig(path)
@@ -75,7 +84,7 @@ func list(c *cli.Context) error {
 	fmt.Println(time.Now().Format("2006/01/02"))
 	fmt.Println("```")
 	for _, list := range lists {
-		if list.Name == "TODO" {
+		if !contains(config.TargetConfig.ShowListNames, list.Name) {
 			continue
 		}
 
