@@ -5,3 +5,4 @@ token="yyyyy"
 [target]
 board_id="zzzzz"
 add_list_id="aaaaa"
+show_list_names=["DOING", "DONE"]

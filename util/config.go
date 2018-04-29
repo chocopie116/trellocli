@@ -14,8 +14,9 @@ type ApiConfig struct {
 	Token  string `toml:"token"`
 }
 type TargetConfig struct {
-	BoardId   string `toml:"board_id"`
-	AddListId string `toml:"add_list_id"`
+	BoardId       string   `toml:"board_id"`
+	AddListId     string   `toml:"add_list_id"`
+	ShowListNames []string `toml:"show_list_names"`
 }
 
 func ReadConfig(path string) (Config, error) {
