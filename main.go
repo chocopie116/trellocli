@@ -6,7 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/BurntSushi/toml"
+	"github.com/chocopie116/trellocli/util"
+
 	"github.com/adlio/trello"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -40,15 +41,6 @@ var commands = []cli.Command{
 	},
 }
 
-type Config struct {
-	ApiConfig ApiConfig `toml:"api"`
-}
-
-type ApiConfig struct {
-	AppKey string `toml:"app_key"`
-	Token  string `toml:"token"`
-}
-
 func main() {
 	app := cli.NewApp()
 	app.Commands = commands
@@ -63,8 +55,7 @@ func main() {
 }
 
 func initClient(path string) *trello.Client {
-	var c Config
-	_, err := toml.DecodeFile(path, &c)
+	c, err := util.ReadConfig(path)
 	if err != nil {
 		logger.Fatalln(errors.Wrap(err, fmt.Sprintf("cannot read config. Value: %s", path)))
 	}
