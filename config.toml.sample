@@ -1,5 +1,8 @@
+# https://trello.com/app-key
 app_key="xxxxx"
 token="yyyyy"
+
+# extract trello board url. ex ) https://trello.com/b/12345/ =>  then your board_id is 12345.
 board_id="zzzzz"
 show_list_names=["DOING", "DONE"]
-add_list_name="TODO"
+add_list_name="INBOX"

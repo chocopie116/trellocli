@@ -148,5 +148,6 @@ func add(c *cli.Context) error {
 		logger.Fatalln(errors.Wrap(err, "failed create Cards on List"))
 	}
 
+	logger.Println("completed")
 	return nil
 }
